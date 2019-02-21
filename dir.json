@@ -1,17 +1,17 @@
 {
-    "a": {
+    "top": {
         
-        "b": {
-            "c" : "1"
+        "sub1": {
+            "file1" : "fileA"
         },
 
-        "n": {
-            "m" : "2",
-            "o" : "3"
+        "sub2": {
+            "file1" : "fileB",
+            "file2" : "fileC"
         },
 
-        "x": {
-            "y" : "4"
+        "sub3": {
+            "file1" : "fileD"
         }
     }
 }

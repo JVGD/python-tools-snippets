@@ -80,7 +80,11 @@ def get_dict_paths(dictionary, ret_list=[], current_path=[]):
         else:
             # Reached final element
             # Getting unix like path
-            path = "/".join(current_path) + "/" + value
+            # TODO: uncomment
+            # path = "/".join(current_path) + "/" + value
+            
+            # not adding key of the value
+            path = "/".join(current_path[:-1]) + "/" + value
 
             # Appending path to output list
             ret_list.append(path)
