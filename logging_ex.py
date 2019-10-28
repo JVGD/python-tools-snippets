@@ -47,7 +47,7 @@ def get_logger(name=None, level=None, log_file=None):
 
 
 if __name__ == "__main__":
-	log = ge_logger(__name__, level=logging.INFO, log_file='app.log')
+	log = get_logger(__name__, level=logging.INFO, log_file='app.log')
 
 	for i in range(10):
 		log.info('Iteration %s', i)
