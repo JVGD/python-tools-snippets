@@ -1,43 +1,57 @@
 import logging
 import sys
+import time
 from logging.handlers import RotatingFileHandler
 
-# General formater for logs in here we define the logs format
-formatter = logging.Formatter('%(asctime)s %(name)s [%(levelname)s] %(message)s')
+def get_logger(name=None, level=None, log_file=None):
 
-# Handler for logging to stdout
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-console_handler.setLevel(logging.DEBUG)
+    # Parsing args
+    if not name:
+        name = __name__
 
-# Handler for logging to a file
-file_handler = RotatingFileHandler('carrier_watchdog.log', maxBytes=2000, backupCount=10)
-file_handler.setFormatter(formatter)
-file_handler.setLevel(logging.DEBUG)
+    log_levels = [logging.CRITICAL, logging.FATAL,
+                  logging.ERROR, logging.WARNING, 
+                  logging.INFO, logging.DEBUG, 
+                  logging.NOTSET]
 
-# Getting the logger that will handle multiple handlers
-logger = logging.getLogger(__file__)
-logger.setLevel(logging.DEBUG)
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
-logger.propagate = False
+    if level not in log_levels:
+       level = logging.INFO
+
+	# Configuring root logger
+    log_format = '%(asctime)s %(name)s [%(levelname)s] %(message)s'
+    logging.basicConfig(
+        level=logging.CRITICAL, 
+        format=log_format)
+
+    # Getting child logger with setted name and level
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    # Handler for logging to a file if log_file is set
+    if log_file:
+        file_handler = RotatingFileHandler(
+            filename=log_file, 
+            maxBytes=2000, 
+            backupCount=10)
+        formatter = logging.Formatter(log_format)
+        file_handler.setFormatter(formatter)
+        file_handler.setLevel(level)
+
+        # Adding hanlders to child logger only
+        # if there is not any other handler already
+        if len(logger.handlers) == 0:
+            logger.addHandler(file_handler)
+
+    # Returning child logger
+    return logger
 
 
 if __name__ == "__main__":
+	log = ge_logger(__name__, level=logging.INFO, log_file='app.log')
 
-	try:
-		for n in range(1000):
-			logger.debug(str(n) + ' debug message')
-			logger.info(str(n) + ' info message')
-			logger.warn(str(n) + ' warn message')
-			logger.error(str(n) + ' error message')
-			logger.critical(str(n) + ' critical message')
-			if n == 900:
-				# Forcing an error
-				raise IOError("This is a forced error")
-	
-	except Exception as e:
-		# Log and dumps error info
-		logger.error('Exception caught', exc_info=True)
-		# Raise exception again
-		raise e
+	for i in range(10):
+		log.info('Iteration %s', i)
+		log.warning('Iteration %s', i)
+		time.sleep(2)
+
+	log.info('Finished')
